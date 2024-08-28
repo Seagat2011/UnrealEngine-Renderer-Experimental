@@ -1,2 +1,2 @@
 # UnrealEngine-Renderer-Experimental
-Experimental generative transformer based renderer for Unreal Engine.
+Experimental generative transformer model based renderer for Unreal Engine.
