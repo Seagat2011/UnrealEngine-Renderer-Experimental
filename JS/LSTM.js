@@ -97,23 +97,27 @@ class LSTM {
     }
   
     sigmoid(x) {
-      return 1 / (1 + Math.exp(-x));
+      const ret = 1 / (1 + Math.exp(-x));
+      return ret;
     }
   
     tanh(x) {
-      return Math.tanh(x);
+      const ret = Math.tanh(x);
+      return ret;
     }
   
     matrixMultiply(a, b) {
-      return a.map((row, i) =>
+      const ret = a.map((row, i) =>
         b[0].map((_, j) =>
           row.reduce((sum, elm, k) => sum + elm * b[k][j], 0)
         )
       );
+      return ret;
     }
   
     vectorAdd(a, b) {
-      return a.map((v, i) => v + b[i]);
+      const ret = a.map((v, i) => v + b[i]);
+      return ret;
     }
   
     step(x) {
@@ -148,7 +152,8 @@ class LSTM {
       // Hidden state update
       this.h = o_activation.map((o_t, j) => o_t * this.tanh(this.c[j]));
   
-      return this.h[0]; // Return the first element of the hidden state as output
+      const ret = this.h[0]; // Return the first element of the hidden state as output
+      return ret;
     }
   }
   
