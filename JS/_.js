@@ -66,3 +66,60 @@ to the screen, based on controller-input and the
 environment (currently for your consideration!)
 
 */
+
+// Function to handle gamepad connection
+function handleGamepadConnected(event) {
+    console.log("A gamepad connected:");
+    console.log(event.gamepad);
+}
+
+// Function to handle gamepad disconnection
+function handleGamepadDisconnected(event) {
+    console.log("A gamepad disconnected:");
+    console.log(event.gamepad);
+}
+
+// Function to process gamepad input
+function processGamepadInput() {
+    const gamepads = navigator.getGamepads();
+    if (!gamepads) {
+        return;
+    }
+
+    const gamepad = gamepads[0]; // Assuming we're using the first connected gamepad
+    if (!gamepad) {
+        return;
+    }
+
+    // Process button inputs
+    for (let i = 0; i < gamepad.buttons.length; i++) {
+        const button = gamepad.buttons[i];
+        if (button.pressed) {
+            console.log(`Button ${i} pressed`);
+            // Add your button-specific logic here
+        }
+    }
+
+    // Process analog stick inputs
+    const leftStickX = gamepad.axes[0];
+    const leftStickY = gamepad.axes[1];
+    const rightStickX = gamepad.axes[2];
+    const rightStickY = gamepad.axes[3];
+
+    // Example: Check if left stick is pushed significantly to the right
+    if (leftStickX > 0.5) {
+        console.log("Left stick pushed right");
+    }
+
+    // Add more analog stick processing logic here
+
+    // Request the next animation frame
+    requestAnimationFrame(processGamepadInput);
+}
+
+// Set up event listeners
+window.addEventListener("gamepadconnected", handleGamepadConnected);
+window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
+
+// Start processing gamepad input
+requestAnimationFrame(processGamepadInput);
