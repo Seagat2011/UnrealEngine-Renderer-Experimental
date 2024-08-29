@@ -191,29 +191,30 @@ class Transformer {
         this.weights = {
             embedding: this.randomMatrix(inputSize, hiddenSize),
             attention: {
-            query: this.randomMatrix(hiddenSize, hiddenSize),
-            key: this.randomMatrix(hiddenSize, hiddenSize),
-            value: this.randomMatrix(hiddenSize, hiddenSize)
+              query: this.randomMatrix(hiddenSize, hiddenSize),
+              key: this.randomMatrix(hiddenSize, hiddenSize),
+              value: this.randomMatrix(hiddenSize, hiddenSize)
             },
             ffn: {
-            w1: this.randomMatrix(hiddenSize, hiddenSize),
-            w2: this.randomMatrix(hiddenSize, hiddenSize)
+              w1: this.randomMatrix(hiddenSize, hiddenSize),
+              w2: this.randomMatrix(hiddenSize, hiddenSize)
             },
             output: this.randomMatrix(hiddenSize, outputSize)
         };
     }
   
     randomMatrix(rows, cols) {
-      return Array.from({ length: rows }, () =>
-        Array.from({ length: cols }, () => Math.random() - 0.5)
-      );
+      const ret = Array.from({ length: rows }, () =>
+        Array.from({ length: cols }, () => Math.random() - 0.5));
+      return ret;
     }
   
     matrixMultiply(a, b) {
       const result = Array(a.length).fill().map(() => Array(b[0].length).fill(0));
       return result.map((row, i) => {
         return row.map((_, j) => {
-          return a[i].reduce((sum, elm, k) => sum + (elm * b[k][j]), 0);
+          const ret = a[i].reduce((sum, elm, k) => sum + (elm * b[k][j]), 0);
+          return ret;
         });
       });
     }
@@ -221,23 +222,27 @@ class Transformer {
     softmax(arr) {
       const expValues = arr.map(Math.exp);
       const sumExpValues = expValues.reduce((a, b) => a + b);
-      return expValues.map(v => v / sumExpValues);
+      const ret = expValues.map(v => v / sumExpValues);
+      return ret;
     }
   
     attention(query, key, value) {
       const scores = this.matrixMultiply(query, this.transpose(key));
       const scaledScores = scores.map(row => row.map(s => s / Math.sqrt(this.hiddenSize)));
       const weights = scaledScores.map(this.softmax);
-      return this.matrixMultiply(weights, value);
+      const ret = this.matrixMultiply(weights, value);
+      return ret;
     }
   
     feedForward(input) {
       const hidden = this.matrixMultiply(input, this.weights.ffn.w1).map(row => row.map(Math.max));
-      return this.matrixMultiply(hidden, this.weights.ffn.w2);
+      const ret = this.matrixMultiply(hidden, this.weights.ffn.w2);
+      return ret;
     }
   
     transpose(matrix) {
-      return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+      const ret = matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+      return ret;
     }
   
     forward(input) {
@@ -263,7 +268,8 @@ class Transformer {
       }
   
       // Output layer
-      return this.matrixMultiply(output, this.weights.output);
+      const ret = this.matrixMultiply(output, this.weights.output);
+      return ret;
     }
   }
   
