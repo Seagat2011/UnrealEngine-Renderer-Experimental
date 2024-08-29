@@ -123,3 +123,70 @@ window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
 
 // Start processing gamepad input
 requestAnimationFrame(processGamepadInput);
+
+/**
+
+# Long Short-Term Memory (LSTM) Architecture (as markdown)
+
+graph LR
+    X[Input] --> |x_t| C1[Forget Gate]
+    X --> |x_t| C2[Input Gate]
+    X --> |x_t| C3[Output Gate]
+    H[Hidden State] --> |h_t-1| C1
+    H --> |h_t-1| C2
+    H --> |h_t-1| C3
+    C1 --> D[Cell State]
+    C2 --> D
+    D --> E[New Cell State]
+    E --> F[New Hidden State]
+    C3 --> F
+    F --> |h_t| Output
+    E --> |c_t| CellStateOutput
+    F --> |Feedback| H
+    Output --> |Feedback| X
+
+# LSTM Architecture Explanation
+
+An LSTM (Long Short-Term Memory) is a type of recurrent neural network (RNN) 
+architecture designed to handle long-term dependencies in sequential data. 
+Here's a breakdown of its key components and operations:
+
+## 1. Input (x_t)
+- The current input at time step t.
+
+## 2. Previous Hidden State (h_t-1)
+- The hidden state from the previous time step.
+
+## 3. Cell State (c_t)
+- The internal memory of the LSTM cell.
+
+## 4. Gates
+LSTM uses three gates to control the flow of information:
+
+### a. Forget Gate
+- Decides what information to discard from the cell state.
+- σ(W_f · [h_t-1, x_t] + b_f)
+
+### b. Input Gate
+- Decides which new information to store in the cell state.
+- σ(W_i · [h_t-1, x_t] + b_i)
+- Creates new candidate values: tanh(W_c · [h_t-1, x_t] + b_c)
+
+### c. Output Gate
+- Decides what to output based on the cell state.
+- σ(W_o · [h_t-1, x_t] + b_o)
+
+## 5. Operations
+
+1. Update the cell state:
+   - c_t = (forget gate * c_t-1) + (input gate * new candidate values)
+
+2. Generate the output (hidden state):
+   - h_t = output gate * tanh(c_t)
+
+## 6. Output
+- The new hidden state (h_t) is used as output and passed to the next time step.
+
+Note: σ represents the sigmoid function, and · represents matrix multiplication.
+
+ */
