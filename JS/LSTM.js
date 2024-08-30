@@ -72,115 +72,105 @@ Note: σ represents the sigmoid function, and · represents matrix multiplicatio
 */
 
 class LSTM {
-    constructor({ weights = [], biases = [] } = {}) {
-        let self = this;
-        let propertyNames = ['f','i','c','o'];
+  constructor({ weights = [], biases = [] } = {}) {
+      let self = this;
+      let propertyNames = ['f','i','c','o'];
 
-        if((weights.length > 0) 
-                && (biases.length > 0)){
-            weights.forEach((u,i,me) => self[`W${propertyNames[i]}`] = u);
-            biases.forEach((u,i,me) => self[`b${propertyNames[i]}`] = u);
-        } else {
-            // Preconfigured weights and biases
-            this.Wf = [[0.1, 0.2], [0.3, 0.4]];
-            this.Wi = [[0.5, 0.6], [0.7, 0.8]];
-            this.Wc = [[0.9, 1.0], [1.1, 1.2]];
-            this.Wo = [[1.3, 1.4], [1.5, 1.6]];
-            this.bf = [0.1, 0.2];
-            this.bi = [0.3, 0.4];
-            this.bc = [0.5, 0.6];
-            this.bo = [0.7, 0.8];
-        }
-        // Initial hidden state and cell state
-        this.h = [0, 0];
-        this.c = [0, 0];
-    }
-  
-    sigmoid(x) {
-      const ret = 1 / (1 + Math.exp(-x));
-      return ret;
-    }
-  
-    tanh(x) {
-      const ret = Math.tanh(x);
-      return ret;
-    }
-  
-    matrixMultiply(a, b) {
-      const ret = a.map((row, i) =>
-        b[0].map((_, j) =>
-          row.reduce((sum, elm, k) => sum + elm * b[k][j], 0)
-        )
-      );
-      return ret;
-    }
-  
-    vectorAdd(a, b) {
-      const ret = a.map((v, i) => v + b[i]);
-      return ret;
-    }
-  
-    step(x) {
-      // Concatenate input and previous hidden state
-      const xh = [x, ...this.h];
-  
-      // Forget gate
-      const f = this.matrixMultiply([xh], this.Wf)[0];
-      const f_bias = this.vectorAdd(f, this.bf);
-      const f_activation = f_bias.map(this.sigmoid);
-  
-      // Input gate
-      const i = this.matrixMultiply([xh], this.Wi)[0];
-      const i_bias = this.vectorAdd(i, this.bi);
-      const i_activation = i_bias.map(this.sigmoid);
-  
-      // Candidate values
-      const c_tilde = this.matrixMultiply([xh], this.Wc)[0];
-      const c_tilde_bias = this.vectorAdd(c_tilde, this.bc);
-      const c_tilde_activation = c_tilde_bias.map(this.tanh);
-  
-      // Cell state update
-      this.c = this.c.map((c_t, j) => 
-        f_activation[j] * c_t + i_activation[j] * c_tilde_activation[j]
-      );
-  
-      // Output gate
-      const o = this.matrixMultiply([xh], this.Wo)[0];
-      const o_bias = this.vectorAdd(o, this.bo);
-      const o_activation = o_bias.map(this.sigmoid);
-  
-      // Hidden state update
-      this.h = o_activation.map((o_t, j) => o_t * this.tanh(this.c[j]));
-  
-      const ret = this.h[0]; // Return the first element of the hidden state as output
-      return ret;
-    }
+      if((weights.length > 0) 
+              && (biases.length > 0)){
+          weights.forEach((u,i,me) => self[`W${propertyNames[i]}`] = u);
+          biases.forEach((u,i,me) => self[`b${propertyNames[i]}`] = u);
+      } else {
+        // For input [x, h1, h2], we need 3x2 matrices
+        this.Wf = [[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]];
+        this.Wi = [[0.7, 0.8], [0.9, 1.0], [1.1, 1.2]];
+        this.Wc = [[1.3, 1.4], [1.5, 1.6], [1.7, 1.8]];
+        this.Wo = [[1.9, 2.0], [2.1, 2.2], [2.3, 2.4]];
+        this.bf = [0.1, 0.2];
+        this.bi = [0.3, 0.4];
+        this.bc = [0.5, 0.6];
+        this.bo = [0.7, 0.8];
+      }
+      // Initial hidden state and cell state
+      this.h = [0, 0];
+      this.c = [0, 0];
   }
-  
-  // Example usage
-  const lstm = new LSTM();
-  const inputSeries = [0.5, 0.8, 0.2, 0.9, 0.1];
-  const outputSeries = [];
-  
-  for (let input of inputSeries) {
-    outputSeries.push(lstm.step(input));
+
+  sigmoid(x) {
+    const ret = 1 / (1 + Math.exp(-x));
+    return ret;
   }
-  
-  console.log("Input series:", inputSeries);
-  console.log("Output series:", outputSeries);
+
+  tanh(x) {
+    const ret = Math.tanh(x);
+    return ret;
+  }    
+
+  matrixMultiply(a, b) {
+    if (a[0].length !== b.length) {
+      throw new Error('Invalid matrix dimensions for multiplication');
+    }
+    return a.map(row => 
+      b[0].map((_, j) => 
+        row.reduce((sum, val, i) => sum + val * b[i][j], 0)
+      )
+    );
+  }
+
+  vectorAdd(a, b) {
+    const ret = a.map((v, i) => v + b[i]);
+    return ret;
+  }
+
+  step(x) {
+    // Concatenate input and previous hidden state
+    const xh = [x, ...this.h];
+
+    // Forget gate
+    const f = this.matrixMultiply([xh], this.Wf)[0];
+    const f_bias = this.vectorAdd(f, this.bf);
+    const f_activation = f_bias.map(this.sigmoid);
+
+    // Input gate
+    const i = this.matrixMultiply([xh], this.Wi)[0];
+    const i_bias = this.vectorAdd(i, this.bi);
+    const i_activation = i_bias.map(this.sigmoid);
+
+    // Candidate values
+    const c_tilde = this.matrixMultiply([xh], this.Wc)[0];
+    const c_tilde_bias = this.vectorAdd(c_tilde, this.bc);
+    const c_tilde_activation = c_tilde_bias.map(this.tanh);
+
+    // Cell state update
+    this.c = this.c.map((c_t, j) => 
+      f_activation[j] * c_t + i_activation[j] * c_tilde_activation[j]
+    );
+
+    // Output gate
+    const o = this.matrixMultiply([xh], this.Wo)[0];
+    const o_bias = this.vectorAdd(o, this.bo);
+    const o_activation = o_bias.map(this.sigmoid);
+
+    // Hidden state update
+    this.h = o_activation.map((o_t, j) => o_t * this.tanh(this.c[j]));
+
+    const ret = this.h[0]; // Return the first element of the hidden state as output
+    return ret;
+  }
+}
 
 /** LSTM usage example */
-
 const lstm = new LSTM();
 const inputSeries = [0.5, 0.8, 0.2, 0.9, 0.1];
+const outputSeries = [];
 
 for (let i = 0; i < inputSeries.length; i++) {
-  const input = inputSeries[i];
-  const output = lstm.step(input);
-  console.log(`Step ${i + 1}:`);
-  console.log(`  Input: ${input}`);
-  console.log(`  Output: ${output}`);
-  console.log(`  Hidden State: ${lstm.h}`);
-  console.log(`  Cell State: ${lstm.c}`);
-  console.log('---');
+const input = inputSeries[i];
+const output = lstm.step(input);
+console.log(`Step ${i + 1}:`);
+console.log(`  Input: ${input}`);
+console.log(`  Output: ${output}`);
+console.log(`  Hidden State: ${lstm.h}`);
+console.log(`  Cell State: ${lstm.c}`);
+console.log('---');
 }
