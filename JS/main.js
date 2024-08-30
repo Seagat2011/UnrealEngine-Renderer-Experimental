@@ -53,25 +53,21 @@ display in pixelArrayZ!
 
 Theory
 
-There are a number of strategies to reach the rasterization image, 
-intended to be displayed to the screen. 
+There are a few strategies available to determine the final rasterization image
+to be displayed to the screen:
 
-1. Calculate IK/FK resolves for the actual 3D mesh within the environment, 
+1. Calculate IK/FK resolves for the actual 3D mesh within the gme environment, 
 in realtime, while accounting for player / controller input (requires additional gpu/cpu)
 
-2. Cache all animation perspectives for 3D animation sequence, 
-then present the next frame based on controller-input 
+2. Cache all animation perspectives for the 3D mesh, 
+for later playback; then present the next frame based on controller-input 
 and the environment (requires additional logic (cpu) + memory)
 
-3. Use a generative transformer model to infer the next frame to present 
-to the screen, based on controller-input and the 
-environment (currently for your consideration!)
-
-The initial strategy is to employ a combination 
-Convolutional Neural Network (CNN)-
-and Long Short-Term Memory (LSTM)- model to capture 
-spatial- and temporal- data, respectively, 
-from the game environment and player input-controller.
+3. Employ a combination Convolutional Neural Network (CNN)
+plus either a Long Short-Term Memory (LSTM) model  
+or Transformer model to capture spatial- and temporal- 
+information, respectively, from the game environment 
+and player input-controller.
 
 */
 
