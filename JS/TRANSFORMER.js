@@ -180,117 +180,117 @@ The Transformer architecture has several advantages:
 // Simplified Transformer implementation in JavaScript
 
 class Transformer {
-    constructor({ inputSize, outputSize, numLayers = 2, numHeads = 4, hiddenSize = 64 } = {}) {
-        let self = this;
-        this.inputSize = inputSize;
-        this.outputSize = outputSize;
-        this.numLayers = numLayers;
-        this.numHeads = numHeads;
-        this.hiddenSize = hiddenSize;        
-        // Initialize weights (simplified)
-        this.weights = {
-            embedding: this.randomMatrix(inputSize, hiddenSize),
-            attention: {
-              query: this.randomMatrix(hiddenSize, hiddenSize),
-              key: this.randomMatrix(hiddenSize, hiddenSize),
-              value: this.randomMatrix(hiddenSize, hiddenSize)
-            },
-            ffn: {
-              w1: this.randomMatrix(hiddenSize, hiddenSize),
-              w2: this.randomMatrix(hiddenSize, hiddenSize)
-            },
-            output: this.randomMatrix(hiddenSize, outputSize)
-        };
-    }
-  
-    randomMatrix(rows, cols) {
-      const ret = Array.from({ length: rows }, () =>
-        Array.from({ length: cols }, () => Math.random() - 0.5));
-      return ret;
-    }
-  
-    matrixMultiply(a, b) {
-      const result = Array(a.length).fill().map(() => Array(b[0].length).fill(0));
-      return result.map((row, i) => {
-        return row.map((_, j) => {
-          const ret = a[i].reduce((sum, elm, k) => sum + (elm * b[k][j]), 0);
-          return ret;
-        });
-      });
-    }
-  
-    softmax(arr) {
-      const expValues = arr.map(Math.exp);
-      const sumExpValues = expValues.reduce((a, b) => a + b);
-      const ret = expValues.map(v => v / sumExpValues);
-      return ret;
-    }
-  
-    attention(query, key, value) {
-      const scores = this.matrixMultiply(query, this.transpose(key));
-      const scaledScores = scores.map(row => row.map(s => s / Math.sqrt(this.hiddenSize)));
-      const weights = scaledScores.map(this.softmax);
-      const ret = this.matrixMultiply(weights, value);
-      return ret;
-    }
-  
-    feedForward(input) {
-      const hidden = this.matrixMultiply(input, this.weights.ffn.w1).map(row => row.map(Math.max));
-      const ret = this.matrixMultiply(hidden, this.weights.ffn.w2);
-      return ret;
-    }
-  
-    transpose(matrix) {
-      const ret = matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
-      return ret;
-    }
-  
-    forward(input) {
-      // Embedding
-      let output = this.matrixMultiply(input, this.weights.embedding);
-  
-      // Transformer layers
-      for (let i = 0; i < this.numLayers; i++) {
-        // Multi-head attention (simplified to single-head)
-        const query = this.matrixMultiply(output, this.weights.attention.query);
-        const key = this.matrixMultiply(output, this.weights.attention.key);
-        const value = this.matrixMultiply(output, this.weights.attention.value);
-        const attentionOutput = this.attention(query, key, value);
-  
-        // Add & Norm (simplified)
-        output = output.map((row, i) => row.map((val, j) => val + attentionOutput[i][j]));
-  
-        // Feed-forward
-        const ffnOutput = this.feedForward(output);
-  
-        // Add & Norm (simplified)
-        output = output.map((row, i) => row.map((val, j) => val + ffnOutput[i][j]));
-      }
-  
-      // Output layer
-      const ret = this.matrixMultiply(output, this.weights.output);
-      return ret;
-    }
+  constructor({ inputSize, outputSize, numLayers = 2, numHeads = 4, hiddenSize = 64 } = {}) {
+      let self = this;
+      this.inputSize = inputSize;
+      this.outputSize = outputSize;
+      this.numLayers = numLayers;
+      this.numHeads = numHeads;
+      this.hiddenSize = hiddenSize;        
+      // Initialize weights (simplified)
+      this.weights = {
+          embedding: this.randomMatrix(inputSize, hiddenSize),
+          attention: {
+            query: this.randomMatrix(hiddenSize, hiddenSize),
+            key: this.randomMatrix(hiddenSize, hiddenSize),
+            value: this.randomMatrix(hiddenSize, hiddenSize)
+          },
+          ffn: {
+            w1: this.randomMatrix(hiddenSize, hiddenSize),
+            w2: this.randomMatrix(hiddenSize, hiddenSize)
+          },
+          output: this.randomMatrix(hiddenSize, outputSize)
+      };
   }
-  
-  // Usage example
-  const inputSize = 10;
-  const outputSize = 5;
-  const transformer = 
-    new Transformer({
-        inputSize: inputSize, 
-        outputSize: outputSize});
-  
-  // Example input (batch size of 1, sequence length of 3)
-  const input = [
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-  ];
-  
-  const output = transformer.forward(input);
-  console.log("Input:", input);
-  console.log("Output:", output);
+
+  randomMatrix(rows, cols) {
+    const ret = Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () => Math.random() - 0.5));
+    return ret;
+  }
+
+  matrixMultiply(a, b) {
+    const result = Array(a.length).fill().map(() => Array(b[0].length).fill(0));
+    return result.map((row, i) => {
+      return row.map((_, j) => {
+        const ret = a[i].reduce((sum, elm, k) => sum + (elm * b[k][j]), 0);
+        return ret;
+      });
+    });
+  }
+
+  softmax(arr) {
+    const expValues = arr.map(Math.exp);
+    const sumExpValues = expValues.reduce((a, b) => a + b);
+    const ret = expValues.map(v => v / sumExpValues);
+    return ret;
+  }
+
+  attention(query, key, value) {
+    const scores = this.matrixMultiply(query, this.transpose(key));
+    const scaledScores = scores.map(row => row.map(s => s / Math.sqrt(this.hiddenSize)));
+    const weights = scaledScores.map(this.softmax);
+    const ret = this.matrixMultiply(weights, value);
+    return ret;
+  }
+
+  feedForward(input) {
+    const hidden = this.matrixMultiply(input, this.weights.ffn.w1).map(row => row.map(Math.max));
+    const ret = this.matrixMultiply(hidden, this.weights.ffn.w2);
+    return ret;
+  }
+
+  transpose(matrix) {
+    const ret = matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+    return ret;
+  }
+
+  forward(input) {
+    // Embedding
+    let output = this.matrixMultiply(input, this.weights.embedding);
+
+    // Transformer layers
+    for (let i = 0; i < this.numLayers; i++) {
+      // Multi-head attention (simplified to single-head)
+      const query = this.matrixMultiply(output, this.weights.attention.query);
+      const key = this.matrixMultiply(output, this.weights.attention.key);
+      const value = this.matrixMultiply(output, this.weights.attention.value);
+      const attentionOutput = this.attention(query, key, value);
+
+      // Add & Norm (simplified)
+      output = output.map((row, i) => row.map((val, j) => val + attentionOutput[i][j]));
+
+      // Feed-forward
+      const ffnOutput = this.feedForward(output);
+
+      // Add & Norm (simplified)
+      output = output.map((row, i) => row.map((val, j) => val + ffnOutput[i][j]));
+    }
+
+    // Output layer
+    const ret = this.matrixMultiply(output, this.weights.output);
+    return ret;
+  }
+}
+
+// Usage example
+const inputSize = 10;
+const outputSize = 5;
+const transformer = 
+  new Transformer({
+      inputSize: inputSize, 
+      outputSize: outputSize});
+
+// Example input (batch size of 1, sequence length of 3)
+const input = [
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+];
+
+const output = transformer.forward(input);
+console.log("Input:", input);
+console.log("Output:", output);
 
 /**
 
@@ -310,13 +310,13 @@ neural network in each Transformer layer.
 
 5. The main `forward` function implements the full 
 Transformer forward pass:
-   - It starts with an embedding layer.
-   - It then applies multiple Transformer layers, each consisting of:
-     - Multi-head attention (simplified to single-head in this implementation)
-     - Add & Norm (simplified)
-     - Feed-forward network
-     - Another Add & Norm
-   - Finally, it applies an output layer.
+ - It starts with an embedding layer.
+ - It then applies multiple Transformer layers, each consisting of:
+   - Multi-head attention (simplified to single-head in this implementation)
+   - Add & Norm (simplified)
+   - Feed-forward network
+   - Another Add & Norm
+ - Finally, it applies an output layer.
 
 6. The usage example shows how to create a Transformer 
 instance and run a forward pass with sample input.
@@ -324,32 +324,32 @@ instance and run a forward pass with sample input.
 To step through this code:
 
 1. Start by creating a Transformer instance:
-   ```javascript
-   const transformer = new Transformer(inputSize, outputSize);
-   ```
-   This initializes all the weights randomly.
+ ```javascript
+ const transformer = new Transformer(inputSize, outputSize);
+ ```
+ This initializes all the weights randomly.
 
 2. Prepare your input. In the example, we have a sequence of 
 3 one-hot encoded vectors:
-   ```javascript
-   const input = [
-     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-   ];
-   ```
+ ```javascript
+ const input = [
+   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+ ];
+ ```
 
 3. Call the `forward` method:
-   ```javascript
-   const output = transformer.forward(input);
-   ```
+ ```javascript
+ const output = transformer.forward(input);
+ ```
 
 4. Inside `forward`, you can add console.log statements to see 
 the intermediate results:
-   - After embedding
-   - After each attention operation
-   - After each feed-forward operation
-   - Final output
+ - After embedding
+ - After each attention operation
+ - After each feed-forward operation
+ - Final output
 
 Remember, this is a simplified implementation to help understand 
 the core concepts. A production-ready Transformer would include 
