@@ -17,12 +17,12 @@ let pixelArrayZ = [
  */
 let _3DFaceLabelsMapStrZ = new Map();
 
-_3DFaceLabelsZ.set('front', 0);
-_3DFaceLabelsZ.set('back', 1);
-_3DFaceLabelsZ.set('left', 2);
-_3DFaceLabelsZ.set('right',3);
-_3DFaceLabelsZ.set('bottom', 4);
-_3DFaceLabelsZ.set('top', 5);
+_3DFaceLabelsMapStrZ.set('front', 0);
+_3DFaceLabelsMapStrZ.set('back', 1);
+_3DFaceLabelsMapStrZ.set('left', 2);
+_3DFaceLabelsMapStrZ.set('right',3);
+_3DFaceLabelsMapStrZ.set('bottom', 4);
+_3DFaceLabelsMapStrZ.set('top', 5);
 
 /**
 Simulate the allotted viewable angles and faces for the viewport
