@@ -25,18 +25,18 @@ _3DFaceLabelsZ.set('bottom', 4);
 _3DFaceLabelsZ.set('top', 5);
 
 /**
- *  Simulate the allotted viewable angles and faces for the viewport
- */
-let controllerViewportRangeObj = {
+Simulate the allotted viewable angles and faces for the viewport
+*/
+const controllerViewportAnglesRangeObjZ = {
     min: 0,
     max: 5,
 }
 
 /**
- * Simulate the number of pixelArrayZ objects (ie. animation frames) to be presented onscreen
- */
-let animationSequenceArrayZ = {
-    start: 0,
+Simulate the number of pixelArrayZ objects (ie. animation frames) to be presented onscreen
+*/
+const animationSequenceRangeObjZ = {
+    begin: 0,
     end: 1,
     step: 0.001,
 }
@@ -77,13 +77,13 @@ from the game environment and player input-controller.
 
 // Function to handle gamepad connection
 function handleGamepadConnected(event) {
-    console.log("A gamepad connected:");
+    console.log("Gamepad connected:");
     console.log(event.gamepad);
 }
 
 // Function to handle gamepad disconnection
 function handleGamepadDisconnected(event) {
-    console.log("A gamepad disconnected:");
+    console.log("Gamepad disconnected:");
     console.log(event.gamepad);
 }
 
