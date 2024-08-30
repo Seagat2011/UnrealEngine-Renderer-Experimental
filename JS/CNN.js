@@ -110,119 +110,135 @@ eventually entire objects.
 */
 
 class CNN {
-    constructor() {
-      this.conv1 = this.createConvLayer(1, 8, 3); // 1 input channel, 8 filters, 3x3 kernel
-      this.conv2 = this.createConvLayer(8, 16, 3); // 8 input channels, 16 filters, 3x3 kernel
-      this.fc = this.createFCLayer(16 * 5 * 5, 10); // Assuming input size is 28x28, after two 2x2 max poolings: 16 * (28/2/2) * (28/2/2) = 16 * 5 * 5
-    }
-  
-    createConvLayer(inChannels, outChannels, kernelSize) {
-      return {
-        weights: this.randomArray([outChannels, inChannels, kernelSize, kernelSize]),
-        bias: this.randomArray([outChannels])
-      };
-    }
-  
-    createFCLayer(inFeatures, outFeatures) {
-      return {
-        weights: this.randomArray([outFeatures, inFeatures]),
-        bias: this.randomArray([outFeatures])
-      };
-    }
-  
-    randomArray(shape) {
-      const size = shape.reduce((a, b) => a * b);
-      return Array.from({ length: size }, () => Math.random() - 0.5);
-    }
-  
-    relu(x) {
-      return Math.max(0, x);
-    }
-  
-    conv2d(input, layer) {
-      // Simplified 2D convolution
-      const [outChannels, inChannels, kernelSize] = layer.weights.length;
-      const output = Array(outChannels).fill().map(() => Array(input[0].length - kernelSize + 1).fill().map(() => Array(input[0][0].length - kernelSize + 1).fill(0)));
-  
-      for (let oc = 0; oc < outChannels; oc++) {
-        for (let i = 0; i < output[0].length; i++) {
-          for (let j = 0; j < output[0][0].length; j++) {
-            let sum = 0;
-            for (let ic = 0; ic < inChannels; ic++) {
-              for (let ki = 0; ki < kernelSize; ki++) {
-                for (let kj = 0; kj < kernelSize; kj++) {
-                  sum += input[ic][i + ki][j + kj] * layer.weights[oc][ic][ki][kj];
-                }
-              }
-            }
-            output[oc][i][j] = this.relu(sum + layer.bias[oc]);
-          }
-        }
-      }
-      return output;
-    }
-  
-    maxPool2d(input, poolSize = 2) {
-      const output = Array(input.length).fill().map(() => 
-        Array(Math.floor(input[0].length / poolSize)).fill().map(() => 
-          Array(Math.floor(input[0][0].length / poolSize)).fill(0)
-        )
-      );
-  
-      for (let c = 0; c < input.length; c++) {
-        for (let i = 0; i < output[0].length; i++) {
-          for (let j = 0; j < output[0][0].length; j++) {
-            let max = -Infinity;
-            for (let pi = 0; pi < poolSize; pi++) {
-              for (let pj = 0; pj < poolSize; pj++) {
-                max = Math.max(max, input[c][i * poolSize + pi][j * poolSize + pj]);
-              }
-            }
-            output[c][i][j] = max;
-          }
-        }
-      }
-      return output;
-    }
-  
-    flatten(input) {
-      return input.flat(2);
-    }
-  
-    fullyConnected(input, layer) {
-      return layer.weights.map((weights, i) => 
-        this.relu(weights.reduce((sum, weight, j) => sum + weight * input[j], 0) + layer.bias[i])
-      );
-    }
-  
-    softmax(input) {
-      const expValues = input.map(Math.exp);
-      const sumExp = expValues.reduce((a, b) => a + b, 0);
-      return expValues.map(exp => exp / sumExp);
-    }
-  
-    forward(input) {
-      let x = input;
-      x = this.conv2d(x, this.conv1);
-      x = this.maxPool2d(x);
-      x = this.conv2d(x, this.conv2);
-      x = this.maxPool2d(x);
-      x = this.flatten(x);
-      x = this.fullyConnected(x, this.fc);
-      x = this.softmax(x);
-      return x;
-    }
+  constructor() {
+    this.conv1 = this.createConvLayer(1, 8, 3); // 1 input channel, 8 filters, 3x3 kernel
+    this.conv2 = this.createConvLayer(8, 16, 3); // 8 input channels, 16 filters, 3x3 kernel
+    this.fc = this.createFCLayer(16 * 5 * 5, 10); // Assuming input size is 28x28, after two 2x2 max poolings: 16 * (28/2/2) * (28/2/2) = 16 * 5 * 5
   }
+
+  createConvLayer(inChannels, outChannels, kernelSize) {
+    return {
+      weights: this.randomArray([outChannels, inChannels, kernelSize, kernelSize]),
+      bias: this.randomArray([outChannels])
+    };
+  }
+
+  createFCLayer(inFeatures, outFeatures) {
+    return {
+      weights: this.randomArray([outFeatures, inFeatures]),
+      bias: this.randomArray([outFeatures])
+    };
+  }
+
+  randomArray(shape) {
+    if (shape.length === 0) {
+      return Math.random() - 0.5;
+    }
+    return Array.from({ length: shape[0] }, () => this.randomArray(shape.slice(1)));
+  }
+
+  relu(x) {
+    const ret = Math.max(0, x);
+    return ret;
+  }
+
+  conv2d(input, layer) {
+    // Correctly extract dimensions from the nested array structure
+    const outChannels = layer.weights.length;
+    const inChannels = layer.weights[0].length;
+    const kernelHeight = layer.weights[0][0].length;
+    const kernelWidth = layer.weights[0][0][0].length;
+
+    const outputHeight = input[0].length - kernelHeight + 1;
+    const outputWidth = input[0][0].length - kernelWidth + 1;
+   
+    const output = Array(outChannels).fill()
+      .map(() => Array(outputHeight).fill()
+        .map(() => Array(outputWidth).fill(0)));
+
+    for (let oc = 0; oc < outChannels; oc++) {
+      for (let i = 0; i < outputHeight; i++) {
+        for (let j = 0; j < outputWidth; j++) {
+          let sum = 0;
+          for (let ic = 0; ic < inChannels; ic++) {
+            for (let ki = 0; ki < kernelHeight; ki++) {
+              for (let kj = 0; kj < kernelWidth; kj++) {
+                sum += input[ic][i + ki][j + kj] * layer.weights[oc][ic][ki][kj];
+              }
+            }
+          }
+          output[oc][i][j] = this.relu(sum + layer.bias[oc]);
+        }
+      }
+    }
+    return output;
+  }
+
+  maxPool2d(input, poolSize = 2) {
+    const output = Array(input.length).fill().map(() => 
+      Array(Math.floor(input[0].length / poolSize)).fill().map(() => 
+        Array(Math.floor(input[0][0].length / poolSize)).fill(0)
+      )
+    );
+
+    for (let c = 0; c < input.length; c++) {
+      for (let i = 0; i < output[0].length; i++) {
+        for (let j = 0; j < output[0][0].length; j++) {
+          let max = -Infinity;
+          for (let pi = 0; pi < poolSize; pi++) {
+            for (let pj = 0; pj < poolSize; pj++) {
+              max = Math.max(max, input[c][i * poolSize + pi][j * poolSize + pj]);
+            }
+          }
+          output[c][i][j] = max;
+        }
+      }
+    }
+    return output;
+  }
+
+  flatten(input) {
+    const ret = input.flat(2);
+    return ret;
+  }
+
+  fullyConnected(input, layer) {
+    const ret = layer.weights.map((weights, i) => 
+      this.relu(weights.reduce((sum, weight, j) => sum + weight * input[j], 0) + layer.bias[i])
+    );
+    return ret;
+  }
+
+  softmax(input) {
+    const expValues = input.map(Math.exp);
+    const sumExp = expValues.reduce((a, b) => a + b, 0);
+    const ret = expValues.map(exp => exp / sumExp);
+    return ret;
+  }
+
+  forward(input) {
+    let x = input;
+    x = this.conv2d(x, this.conv1);
+    x = this.maxPool2d(x);
+    x = this.conv2d(x, this.conv2);
+    x = this.maxPool2d(x);
+    x = this.flatten(x);
+    x = this.fullyConnected(x, this.fc);
+    x = this.softmax(x);
+    return x;
+  }
+} // end class CNN
   
-  // Usage example
-  const cnn = new CNN();
-  
-  // Create a sample 28x28 grayscale image (1 channel)
-  const sampleImage = Array(1).fill().map(() => 
+// Usage example
+const cnn = new CNN();
+
+// Create a sample 28x28 grayscale image (1 channel)
+const sampleImage = 
+  Array(1).fill().map(() => 
     Array(28).fill().map(() => 
       Array(28).fill().map(() => Math.random())
     )
   );
-  
-  const output = cnn.forward(sampleImage);
-  console.log("Output probabilities:", output);
+
+const output = cnn.forward(sampleImage);
+console.log("Output probabilities:", output);
