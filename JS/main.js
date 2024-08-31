@@ -83,21 +83,112 @@ and player input-controller.
 
 */
 
+// Function to simulate the gamePad
+function getGamepads() {
+    const gamepads = [
+        {
+            id: "Xbox Controller (STANDARD GAMEPAD Vendor: 045e Product: 02fd)",
+            index: 0,
+            connected: true,
+            buttons: [
+                { pressed: false }, // A
+                { pressed: false }, // B
+                { pressed: false }, // X
+                { pressed: false }, // Y
+                { pressed: false }, // Left Bumper
+                { pressed: false }, // Right Bumper
+                { pressed: false, value: 0 }, // Left Trigger
+                { pressed: false, value: 0 }, // Right Trigger
+                { pressed: false }, // Back
+                { pressed: false }, // Start
+                { pressed: false }, // Left Stick
+                { pressed: false }, // Right Stick
+                { pressed: false }, // D-pad Up
+                { pressed: false }, // D-pad Down
+                { pressed: false }, // D-pad Left
+                { pressed: false }, // D-pad Right
+                { pressed: false }, // Xbox Button
+            ],
+            axes: [0, 0, 0, 0], // [leftStickX, leftStickY, rightStickX, rightStickY]
+        },
+        {
+            id: "PlayStation 5 Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)",
+            index: 1,
+            connected: true,
+            buttons: [
+                { pressed: false }, // Cross
+                { pressed: false }, // Circle
+                { pressed: false }, // Square
+                { pressed: false }, // Triangle
+                { pressed: false }, // L1
+                { pressed: false }, // R1
+                { pressed: false, value: 0 }, // L2
+                { pressed: false, value: 0 }, // R2
+                { pressed: false }, // Share
+                { pressed: false }, // Options
+                { pressed: false }, // L3
+                { pressed: false }, // R3
+                { pressed: false }, // D-pad Up
+                { pressed: false }, // D-pad Down
+                { pressed: false }, // D-pad Left
+                { pressed: false }, // D-pad Right
+                { pressed: false }, // PS Button
+                { pressed: false }, // Touchpad
+            ],
+            axes: [0, 0, 0, 0], // [leftStickX, leftStickY, rightStickX, rightStickY]
+        }
+    ];
+    return gamepads;
+}
+
+// Function to simulate button press
+function pressButton(gamepadIndex, buttonIndex) {
+    const gamepads = getGamepads();
+    if (gamepads[gamepadIndex] && gamepads[gamepadIndex].buttons[buttonIndex]) {
+        gamepads[gamepadIndex].buttons[buttonIndex].pressed = true;
+    }
+}
+
+// Function to simulate button release
+function releaseButton(gamepadIndex, buttonIndex) {
+    const gamepads = getGamepads();
+    if (gamepads[gamepadIndex] && gamepads[gamepadIndex].buttons[buttonIndex]) {
+        gamepads[gamepadIndex].buttons[buttonIndex].pressed = false;
+    }
+}
+
+// Function to simulate analog trigger press
+function pressTrigger(gamepadIndex, triggerIndex, value) {
+    const gamepads = getGamepads();
+    if (gamepads[gamepadIndex] && gamepads[gamepadIndex].buttons[triggerIndex]) {
+        gamepads[gamepadIndex].buttons[triggerIndex].pressed = value > 0;
+        gamepads[gamepadIndex].buttons[triggerIndex].value = Math.max(0, Math.min(1, value));
+    }
+}
+
+// Function to simulate stick movement
+function moveStick(gamepadIndex, axisIndex, value) {
+    const gamepads = getGamepads();
+    if (gamepads[gamepadIndex] && gamepads[gamepadIndex].axes[axisIndex] !== undefined) {
+        gamepads[gamepadIndex].axes[axisIndex] = Math.max(-1, Math.min(1, value));
+    }
+}
+
 // Function to handle gamepad connection
 function handleGamepadConnected(event) {
     console.log("Gamepad connected:");
     console.log(event.gamepad);
-}
+} // end handleGamepadConnected()
 
 // Function to handle gamepad disconnection
 function handleGamepadDisconnected(event) {
     console.log("Gamepad disconnected:");
     console.log(event.gamepad);
-}
+} // end handleGamepadDisconnected()
 
 // Function to process gamepad input
 function processGamepadInput() {
-    const gamepads = navigator.getGamepads();
+    const gamepads = /* navigator. */getGamepads();
     if (!gamepads) {
         return;
     }
@@ -131,7 +222,7 @@ function processGamepadInput() {
 
     // Request the next animation frame
     requestAnimationFrame(processGamepadInput);
-}
+} // end processGamepadInput()
 
 // Set up event listeners
 window.addEventListener("gamepadconnected", handleGamepadConnected);
@@ -139,3 +230,97 @@ window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
 
 // Start processing gamepad input
 requestAnimationFrame(processGamepadInput);
+
+// Example usage
+console.log(getGamepads()); // Initial state
+
+const Platform = {
+    Console: {
+        XBOX: {
+            index: 0,
+            Button: {
+                A: 0,
+                B: 1,
+                X: 2,
+                Y: 3,
+                LB: 4,
+                RB: 5,
+                BACK: 8,
+                START: 9,
+                LEFT_STICK: 10,
+                RIGHT_STICK: 11,
+                DPAD_UP: 12,
+                DPAD_DOWN: 13,
+                DPAD_LEFT: 14,
+                DPAD_RIGHT: 15,
+                XBOX: 16,
+            },
+            Trigger: {
+                LT: 6,
+                RT: 7,
+            },
+            Axis: {
+                LEFT_STICK_X: 0,
+                LEFT_STICK_Y: 1,
+                RIGHT_STICK_X: 2,
+                RIGHT_STICK_Y: 3,
+            },
+        },
+        PS5: {
+            index: 1,
+            Button: {
+                CROSS: 0,
+                CIRCLE: 1,
+                SQUARE: 2,
+                TRIANGLE: 3,
+                L1: 4,
+                R1: 5,
+                SHARE: 8,
+                OPTIONS: 9,
+                L3: 10,
+                R3: 11,
+                DPAD_UP: 12,
+                DPAD_DOWN: 13,
+                DPAD_LEFT: 14,
+                DPAD_RIGHT: 15,
+                PS: 16,
+                TOUCHPAD: 17,
+            },
+            Trigger: {
+                L2: 6,
+                R2: 7,
+            },
+            Axis: {
+                LEFT_STICK_X: 0,
+                LEFT_STICK_Y: 1,
+                RIGHT_STICK_X: 2,
+                RIGHT_STICK_Y: 3,
+            },
+        },
+    },
+    PC: {
+        index: 2,
+        Key: {
+            W: 'w',
+            A: 'a',
+            S: 's',
+            D: 'd',
+            SPACE: ' ',
+            SHIFT: 'Shift',
+            CTRL: 'Control',
+            ALT: 'Alt',
+            ENTER: 'Enter',
+            ESCAPE: 'Escape',
+            // Add more keys as needed
+        },
+        Mouse: {
+            LEFT: 0,
+            MIDDLE: 1,
+            RIGHT: 2,
+        },
+    },
+}; // end Platform
+
+pressButton(Platform.Console.XBOX, Platform.Console.XBOX.Button.A); // Press A on Xbox controller
+pressTrigger(Platform.Console.PS5, Platform.Console.PS5.Trigger.R2, 0.5); // Half-press R2 on PS5 controller
+moveStick(Platform.Console.XBOX, Platform.Console.XBOX.Axis.LEFT_STICK_X, 0.7); // Move left stick right on Xbox controller
