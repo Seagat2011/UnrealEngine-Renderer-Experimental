@@ -41,6 +41,18 @@ const animationSequenceRangeObjZ = {
     step: 0.001,
 }
 
+/**
+	@brief Performs linear interpolation (LERP) between two values.
+	@details Calculates a value linearly interpolated between a start and end value,
+			 based on a given factor that indicates the relative position between the two.
+	@param start The start value for interpolation.
+	@param end The end value for interpolation.
+	@param factor Range between [0.000,1.000] indicating the position between the start and end values.
+	@return The interpolated value. */
+	function LERP(start, end, factor) {
+		return (1 - factor) * start + factor * end;
+	}
+
 /*
 Scenarios
 
