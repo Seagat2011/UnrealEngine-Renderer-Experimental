@@ -236,8 +236,8 @@ console.log(getGamepads()); // Initial state
 
 const Platform = {
     Console: {
+        _XBOX_: 0,
         XBOX: {
-            index: 0,
             Button: {
                 A: 0,
                 B: 1,
@@ -266,8 +266,8 @@ const Platform = {
                 RIGHT_STICK_Y: 3,
             },
         },
+        _PS5_: 1,
         PS5: {
-            index: 1,
             Button: {
                 CROSS: 0,
                 CIRCLE: 1,
@@ -298,8 +298,8 @@ const Platform = {
             },
         },
     },
+    _PC_: 2,
     PC: {
-        index: 2,
         Key: {
             W: 'w',
             A: 'a',
@@ -325,6 +325,6 @@ const Platform = {
     },
 }; // end Platform
 
-pressButton(Platform.Console.XBOX, Platform.Console.XBOX.Button.A); // Press A on Xbox controller
-pressTrigger(Platform.Console.PS5, Platform.Console.PS5.Trigger.R2, 0.5); // Half-press R2 on PS5 controller
-moveStick(Platform.Console.XBOX, Platform.Console.XBOX.Axis.LEFT_STICK_X, 0.7); // Move left stick right on Xbox controller
+pressButton(Platform.Console._XBOX_, Platform.Console.XBOX.Button.A); // Press A on Xbox controller
+pressTrigger(Platform.Console._PS5_, Platform.Console.PS5.Trigger.R2, 0.5); // Half-press R2 on PS5 controller
+moveStick(Platform.Console._XBOX_, Platform.Console.XBOX.Axis.LEFT_STICK_X, 0.7); // Move left stick right on Xbox controller
