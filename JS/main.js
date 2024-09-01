@@ -311,6 +311,10 @@ const Platform = {
             ALT: 'Alt',
             ENTER: 'Enter',
             ESCAPE: 'Escape',
+            ARROW_UP: 'Up',
+            ARROW_DOWN: 'Down',
+            ARROW_LEFT: 'Left',
+            ARROW_RIGHT: 'Right',
             // Add keys as needed
         },
         Mouse: {
