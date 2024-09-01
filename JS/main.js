@@ -203,7 +203,7 @@ function processGamepadInput() {
         const button = gamepad.buttons[i];
         if (button.pressed) {
             console.log(`Button ${i} pressed`);
-            // Add your button-specific logic here
+            // Add your button-specific logic here //
         }
     }
 
@@ -218,7 +218,7 @@ function processGamepadInput() {
         console.log("Left stick pushed right");
     }
 
-    // Add more analog stick processing logic here
+    // Add more analog stick processing logic here //
 
     // Request the next animation frame
     requestAnimationFrame(processGamepadInput);
@@ -315,7 +315,7 @@ const Platform = {
             ARROW_DOWN: 'Down',
             ARROW_LEFT: 'Left',
             ARROW_RIGHT: 'Right',
-            // Add keys as needed
+            // Add keys as needed //
         },
         Mouse: {
             LEFT: 0,
