@@ -311,7 +311,7 @@ const Platform = {
             ALT: 'Alt',
             ENTER: 'Enter',
             ESCAPE: 'Escape',
-            // Add more keys as needed
+            // Add keys as needed
         },
         Mouse: {
             LEFT: 0,
