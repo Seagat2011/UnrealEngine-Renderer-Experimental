@@ -233,9 +233,11 @@ class Transformer {
     const ret = this.matrixMultiply(weights, value);
     return ret;
   }
-
-  feedForward(input) {
-    const hidden = this.matrixMultiply(input, this.weights.ffn.w1).map(row => row.map(Math.max));
+  
+  feedForward(x) {
+    const hidden = this.matrixMultiply(x, this.weights.ffn.w1).map(row => 
+      row.map(x => Math.max(0, x))  // ReLU activation
+    );
     const ret = this.matrixMultiply(hidden, this.weights.ffn.w2);
     return ret;
   }
