@@ -158,8 +158,8 @@ class CNN {
 
     for (let oc = 0; oc < outChannels; oc++) {
       for (let i = 0; i < outputHeight; i++) {
-        for (let j = 0; j < outputWidth; j++) {
-          let sum = 0;
+        for (let j = 0; j < outputWidth; j++) {          
+          let sum = layer.bias[oc];  // Initialize sum with the bias
           for (let ic = 0; ic < inChannels; ic++) {
             for (let ki = 0; ki < kernelHeight; ki++) {
               for (let kj = 0; kj < kernelWidth; kj++) {
